@@ -125,6 +125,7 @@
 
   }).call(this, jQuery);
   </script>
+
   <script>
    var imageElementId = 'image';
    function IsPercent(val) {
@@ -154,6 +155,8 @@
      return ret;
    }
 
+   var all_children = []
+
    var boxid = 1;
    function AddBox(coords, uncover) {
      var parent = $('#map-container');
@@ -177,10 +180,17 @@
      if (uncover) {
        child.click();
      }
+     all_children.push(child);
    }
    function Square(corners) {
      return [[corners[0][0], corners[0][1]], [corners[0][0], corners[1][1]],
              [corners[1][0], corners[1][1]], [corners[1][0], corners[0][1]]];
+   }
+
+   function RevealAll() {
+     for(var i = 1; i < all_children.length; ++i) {
+       all_children[i].click();
+     }
    }
 
    $(window).load(function() {
@@ -191,7 +201,7 @@
      // Dining Hall
      AddBox(Square([[537, 550], [440, 450]]));
      // Hall of Displays
-     AddBox([[537, 450], [508, 396], [520, 395], [520, 293], [500, 293], [500, 246], [467, 246], [467, 293], [440, 290], [440, 450]]);
+     AddBox([[539, 450], [508, 396], [520, 395], [520, 293], [500, 293], [500, 246], [467, 246], [467, 293], [440, 290], [443, 450]]);
      // Bone Pit
      AddBox([[465, 246], [464, 217], [520, 215], [539, 189], [576, 189], [600, 214], [648, 214], [675, 193], [675, 221], [645, 249], [592, 249], [570, 273], [542, 273], [520, 247]]); 
      // Inner Bone Pit
@@ -224,6 +234,18 @@
      AddBox([[436, 501], [410, 501], [406, 474], [352, 438], [351, 387], [420, 387], [439, 472]]);
      // Back Body Transport Area
      AddBox([[408, 473], [355, 437], [339, 492], [386, 493]]);
+     // Side Passage to boss
+     AddBox([[285, 414], [264, 413], [237, 433], [217, 432], [157, 423], [158, 444], [181, 473], [239, 476], [263, 453]]);
+     // Guard Area
+     AddBox([[215, 437], [180, 465], [157, 440], [157, 421], [139, 420], [108, 390], [110, 350], [138, 388], [212, 387]]);
+     // Kobold Area
+     AddBox([[139, 389], [109, 369], [110, 336], [167, 334], [168, 385]]);
+     // Boss Fight Area
+     AddBox([[107, 388], [0, 386], [0, 415], [98, 413], [76, 431], [2, 433], [0, 510], [37, 493], [138, 497], [138, 422]]);
+     // Boss' Study
+     AddBox([[34, 493], [4, 503], [1, 541], [65, 548], [65, 494]]);
+
+     RevealAll();
    });
   </script>
  </head>
