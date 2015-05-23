@@ -129,6 +129,10 @@
      AddBox([[34, 493], [4, 503], [1, 541], [65, 548], [65, 494]]);
 
      $("#reveal-all").click(function() { RevealAll(); });
+     $("#remove-buttons").click(function() {
+       $("#reveal-all").remove();
+       $("#remove-buttons").remove();
+     });
    });
   </script>
  </head>
@@ -137,5 +141,6 @@
    <img id='image' src='ddex1-4 catacombs cropped.png' />
   </div>
   <div id='reveal-all' style='border: thick black solid; padding: 3px; background: white; float: right'>Reveal All</div>
+  <div id='remove-buttons' style='border: thick black solid; padding: 3px; background: white; float: right'>Remove Buttons</div>
  </body>
 </html>
