@@ -100,7 +100,7 @@
      // Back Staking Room
      AddBox([[385, 62], [384, 49], [365, 46], [362, 6], [527, 6], [529, 44], [409, 48], [407, 62]]);
      // Obelisk Room
-     AddBox([[392, 186], [424, 172], [423, 186], [449, 190], [448, 247], [362, 247], [364, 189]]);
+     AddBox([[392, 184], [424, 170], [423, 186], [449, 190], [448, 247], [362, 247], [364, 189]]);
      // Stairs Post-Obelisk
      AddBox([[314, 149], [347, 134], [348, 62], [299, 61], [314, 93]]);
      // Ceiling Skeleton Room
@@ -116,7 +116,7 @@
      // Body transport area
      AddBox([[436, 501], [410, 501], [406, 474], [352, 438], [351, 387], [420, 387], [439, 472]]);
      // Back Body Transport Area
-     AddBox([[408, 473], [355, 437], [339, 492], [386, 493]]);
+     AddBox([[408, 473], [355, 437], [339, 496], [386, 496]]);
      // Side Passage to boss
      AddBox([[285, 414], [264, 413], [237, 433], [217, 432], [157, 423], [158, 444], [181, 473], [239, 476], [263, 453]]);
      // Guard Area
@@ -128,7 +128,7 @@
      // Boss' Study
      AddBox([[34, 493], [4, 503], [1, 541], [65, 548], [65, 494]]);
 
-     RevealAll();
+     $("#reveal-all").click(function() { RevealAll(); });
    });
   </script>
  </head>
@@ -136,5 +136,6 @@
   <div class='map' id='map-container'>
    <img id='image' src='ddex1-4 catacombs cropped.png' />
   </div>
+  <div id='reveal-all' style='border: thick black solid; padding: 3px; background: white; float: right'>Reveal All</div>
  </body>
 </html>
