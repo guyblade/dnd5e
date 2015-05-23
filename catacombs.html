@@ -1,0 +1,235 @@
+<html>
+ <head>
+  <title>DDEX1-4 Catacombs Map</title>
+  <style>
+    .map { position: relative; }
+    .sub-map { position: absolute; left: 0; top: 0; z-index: 5 }
+    .black { position: absolute; left: 0; top: 0; background-image: url('shot_1.png'); z-index: 10 }
+    #image { position: fixed; right: -1000in; }
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script>
+  /*!
+   * jQuery clip-path-polygon Plugin v0.1.3 (2013-08-31)
+   * jQuery plugin that makes easy to use clip-path on whatever tag under different browsers
+   * https://github.com/andrusieczko/clip-path-polygon
+   * 
+   * Copyright 2013 Karol Andrusieczko
+   * Released under MIT license
+   */
+ 
+   var jQuery = jQuery || (require && require('jquery'));
+  (function($) {
+
+    var ClipPath = function(jQuery, $el, points, options) {
+      this.$ = jQuery;
+      this.$el = $el;
+      this.points = points;
+
+      this.processOptions(options);
+    };
+
+    if (typeof exports !== 'undefined') {
+      if (typeof module !== 'undefined' && module.exports) {
+        exports = module.exports = ClipPath;
+      }
+      exports.ClipPath = ClipPath;
+    } else {
+      var globalVariable = window || root;
+      globalVariable.ClipPath = ClipPath;
+    }
+
+    ClipPath.prototype = {
+
+      $: null,
+      $el: null,
+      points: null,
+
+      isForWebkit: true,
+      isForSvg: true,
+      svgDefId: 'clipPathPolygonGenId',
+
+      create: function() {
+        this._createClipPath(this.points);
+      },
+
+      _createClipPath: function(points) {
+        this._createSvgDefs();
+        if (this.isForWebkit) {
+          this._createWebkitClipPath(points);
+        }
+        if (this.isForSvg) {
+          this._createSvgBasedClipPath(points);
+        }
+      },
+
+      _createWebkitClipPath: function(points) {
+        var clipPath = "polygon(" + this._translatePoints(points, true) + ")";
+        this.$el.css('-webkit-clip-path', clipPath);
+      },
+
+      _createSvgBasedClipPath: function(points) {
+        this.$('#' + this.svgDefId + '').find('polygon').attr('points', this._translatePoints(points, false));
+        this.$el.css('clip-path', 'url(#' + this.svgDefId + ')');
+      },
+
+
+      _translatePoints: function(points, withPxs) {
+        var result = [];
+        for (var i in points) {
+          var x = this._handlePxs(points[i][0], withPxs);
+          var y = this._handlePxs(points[i][1], withPxs);
+          result.push(x + ' ' + y);
+        }
+        return result.join(', ');
+      },
+
+      _handlePxs: function(number, withPxs) {
+        if (number === 0 || !withPxs) {
+          return number;
+        }
+        return number + "px";
+      },
+
+      _createSvgElement: function(elementName) {
+        return this.$(document.createElementNS('http://www.w3.org/2000/svg', elementName));
+      },
+
+      _createSvgDefs: function() {
+        if (this.$('#' + this.svgDefId + '').size() === 0) {
+          var $svg = this._createSvgElement('svg').attr('width', 0).attr('height', 0);
+          var $defs = this._createSvgElement('defs');
+          $svg.append($defs);
+          var $clippath = this._createSvgElement('clipPath').attr('id', this.svgDefId);
+          $defs.append($clippath);
+          var $polygon = this._createSvgElement('polygon');
+          $clippath.append($polygon);
+          this.$('body').append($svg);
+        }
+      },
+
+      processOptions: function(options) {
+        this.isForWebkit = (options && options.isForWebkit) || this.isForWebkit;
+        this.isForSvg = (options && options.isForSvg) || this.isForSvg;
+        this.svgDefId = (options && options.svgDefId) || this.svgDefId;
+      }
+    };
+
+    $.fn.clipPath = function(points, options) {
+      return this.each(function() {
+        var $el = $(this);
+        var clipPath = new ClipPath($, $el, points, options);
+        clipPath.create();
+      });
+    };
+
+  }).call(this, jQuery);
+  </script>
+  <script>
+   var imageElementId = 'image';
+   function IsPercent(val) {
+     var ret = ("" + val).substring(val.length - 1) == '%';
+     return ret;
+   }
+   function PercentVal(val) {
+     console.log("Converting : " + val);
+     return parseFloat(val.substring(0, val.length - 1)) / 100.0;
+   }
+   function CoerceCoords(coords) {
+     var ret = [];
+     var width = $('#' + imageElementId).width();
+     var height = $('#' + imageElementId).height();
+
+     for (var i = 0; i < coords.length; ++i) {
+       if (coords[i].length != 2) {
+         alert('Your shit be broken');
+       }
+       var indv = [(IsPercent(coords[i][0]) ? 
+                    PercentVal(coords[i][0]) * width : coords[i][0]),
+                   (IsPercent(coords[i][1]) ?
+                    PercentVal(coords[i][1]) * height : coords[i][1])];
+       ret[i] = indv;
+     }
+     console.log(ret);
+     return ret;
+   }
+
+   var boxid = 1;
+   function AddBox(coords, uncover) {
+     var parent = $('#map-container');
+     console.log(parent.attr('id'));
+     var name = 'blackout-' + boxid++;
+     var child = $('<div id="'  + name + '" />');
+     child.addClass('black');
+     child.width($("#" + imageElementId).width());
+     child.height($("#" + imageElementId).height());
+     console.log(child.attr('id'));
+     coords = CoerceCoords(coords);
+     child.clipPath(coords);
+     child.click(function() {
+       $(this).fadeToggle();
+     });
+     var map_child = $('<img src="' + $("#" + imageElementId).attr("src") + '" />');
+     map_child.addClass('sub-map');
+     map_child.clipPath(coords);
+     parent.append(map_child);
+     parent.append(child);
+     if (uncover) {
+       child.click();
+     }
+   }
+   function Square(corners) {
+     return [[corners[0][0], corners[0][1]], [corners[0][0], corners[1][1]],
+             [corners[1][0], corners[1][1]], [corners[1][0], corners[0][1]]];
+   }
+
+   $(window).load(function() {
+     // Stairs In
+     AddBox(Square([[529, 549], [570, 600]]), true);
+     // Entrance
+     AddBox([[537, 550], [537, 450], [508, 396], [594, 395], [620, 423], [619, 525], [590, 553]]);
+     // Dining Hall
+     AddBox(Square([[537, 550], [440, 450]]));
+     // Hall of Displays
+     AddBox([[537, 450], [508, 396], [520, 395], [520, 293], [500, 293], [500, 246], [467, 246], [467, 293], [440, 290], [440, 450]]);
+     // Bone Pit
+     AddBox([[465, 246], [464, 217], [520, 215], [539, 189], [576, 189], [600, 214], [648, 214], [675, 193], [675, 221], [645, 249], [592, 249], [570, 273], [542, 273], [520, 247]]); 
+     // Inner Bone Pit
+     AddBox([[675, 193], [648, 214], [644, 174], [592, 174], [592, 116], [648, 116], [673, 94], [701, 94], [701, 147], [673, 152]]);
+     // Back Bone Pit
+     AddBox([[673, 94], [648, 116], [595, 118], [595, 65], [678, 68]]); 
+     // Stairs After Bone Bit
+     AddBox(Square([[468, 115], [498, 217]]));
+     // Around Stairs
+     AddBox([[497, 172], [524, 172], [524, 91], [426, 88], [425, 117], [442, 117], [444, 138], [317, 133], [316, 167], [388, 170], [391, 186], [424, 172], [470, 173], [472, 118], [496, 118]]);
+     // Staking Room
+     AddBox([[366, 62], [427, 63], [425, 117], [368, 118]]);
+     // Back Staking Room
+     AddBox([[385, 62], [384, 49], [365, 46], [362, 6], [527, 6], [529, 44], [409, 48], [407, 62]]);
+     // Obelisk Room
+     AddBox([[392, 186], [424, 172], [423, 186], [449, 190], [448, 247], [362, 247], [364, 189]]);
+     // Stairs Post-Obelisk
+     AddBox([[314, 149], [347, 134], [348, 62], [299, 61], [314, 93]]);
+     // Ceiling Skeleton Room
+     AddBox([[314, 91], [297, 91], [271, 114], [196, 114], [162, 143], [161, 51], [185, 23], [273, 25], [299, 54]]);
+     // Skull Room
+     AddBox([[194, 116], [163, 139], [162, 239], [263, 243], [295, 261], [295, 261], [295, 182], [270, 159], [197, 155]]);
+     // Crown Room
+     AddBox([[164, 182], [144, 182], [142, 156], [83, 154], [85, 239], [144, 241], [145, 218], [162, 216]]);
+     // Punishment Room
+     AddBox([[262, 240], [294, 259], [370, 267], [368, 371], [317, 373], [317, 493], [320, 512], [274, 512], [282, 490], [282, 448], [265, 448], [282, 415], [284, 371], [235, 366], [238, 261], [260, 261]]);
+     // Necropolis
+     AddBox([[207, 492], [387, 495], [389, 589], [205, 588]]);
+     // Body transport area
+     AddBox([[436, 501], [410, 501], [406, 474], [352, 438], [351, 387], [420, 387], [439, 472]]);
+     // Back Body Transport Area
+     AddBox([[408, 473], [355, 437], [339, 492], [386, 493]]);
+   });
+  </script>
+ </head>
+ <body style="background-image: url('shot_1.png')">
+  <div class='map' id='map-container'>
+   <img id='image' src='ddex1-4 catacombs cropped.png' />
+  </div>
+ </body>
+</html>
